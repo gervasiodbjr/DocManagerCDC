@@ -1,0 +1,32 @@
+
+[tasks."docker:start:all"]
+description = "Start all required Docker containers"
+run = "docker compose -f docker-compose.yml up -d"
+
+[tasks."docker:ps"]
+run = "docker compose -f docker-compose.yml ps"
+
+[tasks."postgres:connect"]
+description = "Connect to PostgreSQL database (outbox_demo) using interactive psql client"
+run = "docker exec -it $(docker compose -f docker-compose.yml ps -q postgres) psql -U admin -d doc-manager"
+
+[tasks."kafka-debezium-connector"]
+description = "Cria o conector <postgres-debezium-connector> no kafka"
+run = '''
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"name": "postgres-debezium-connector","config": {"connector.class": "io.debezium.connector.postgresql.PostgresConnector","plugin.name": "pgoutput","database.hostname": "postgres","database.port": "5432","database.user": "admin","database.password": "postgresxpto","database.dbname": "doc-manager","table.include.list": "public.documento","topic.prefix": "debezium","schema.history.internal.kafka.bootstrap.servers": "kafka:9092","schema.history.internal.kafka.topic": "schema-changes.doc-manager"}}' \
+  'http://localhost:8083/connectors/'
+'''
+
+[tasks."kafka:criar-topico-shema"]
+description = "Cria o tópico <schema-changes.doc-manager no kafka"
+run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create --topic schema-changes.doc-manager --partitions 3 --replication-factor 1"
+
+[tasks."kafka:criar-topico-documento"]
+description = "Cria o tópico <debezium.public.documento> no kafka"
+run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create --topic debezium.public.documento --partitions 3 --replication-factor 1"
+
+[tasks."kafka:topico-documento"]
+description = "Monitora e lista as mensagens eviadas para o tópico <debezium.public.documento> no kafka"
+run = "docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic debezium.public.documento --from-beginning"

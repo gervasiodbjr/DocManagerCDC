@@ -1,0 +1,138 @@
+services:
+
+  postgres:
+    image: postgres:14.3
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: postgresxpto
+      POSTGRES_DB: doc-manager
+    command: [
+      "postgres",
+      "-c", "wal_level=logical",
+      "-c", "max_replication_slots=10",
+      "-c", "max_wal_senders=10"
+    ]
+    ports:
+      - "5433:5432"
+    volumes:
+    - ./configs/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+
+  postgres-admin:
+    image: adminer
+    # restart: always
+    ports:
+      - 8081:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DEFAULT_SISTEM: pgsql
+
+  zookeeper:
+        image: confluentinc/cp-zookeeper:7.2.15
+        platform: linux/arm64
+        hostname: zookeeper
+        container_name: zookeeper
+        ports:
+          - "2181:2181"
+        environment:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+  
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.2.15
+    platform: linux/arm64
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  
+  kafka-connect:
+        image: confluentinc/cp-kafka-connect-base:7.2.15
+        platform: linux/arm64
+        hostname: kafka-connect
+        container_name: kafka-connect
+        depends_on:
+          - zookeeper
+          - kafka
+        ports:
+          - 8083:8083
+          - 8888:8888
+        environment:
+          CONNECT_BOOTSTRAP_SERVERS: "kafka:9092"
+          CONNECT_REST_PORT: 8083
+          KAFKA_DEBUG: 1
+          JAVA_DEBUG_PORT: "*:8888"
+          CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+          CONNECT_GROUP_ID: compose-connect-group
+          CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
+          CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
+          CONNECT_STATUS_STORAGE_TOPIC: connect-status
+          CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+          CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+          CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+          CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+          CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+          CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+          CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+          CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+          CONNECT_PLUGIN_PATH: '/usr/share/java,/kafka-plugins,/usr/share/confluent-hub-components'
+          CONNECT_TOPIC_CREATION_ENABLE: "true"
+          # Para controlar a criação automática de tópicos pelo Kafka Connect
+          CONNECT_TOPIC_CREATION_DEFAULT_REPLICATION_FACTOR: "1"
+          CONNECT_TOPIC_CREATION_DEFAULT_PARTITIONS: "3"
+          CONNECT_TOPIC_CREATION_DEFAULT_CLEANUP_POLICY: "compact"
+          CONNECT_TOPIC_CREATION_DEFAULT_COMPRESSION_TYPE: "lz4"
+        volumes:
+          - ./configs/kafka-connect:/kafka-plugins
+          - ./configs/transforms/confluent-hub-components:/usr/share/confluent-hub-components
+
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    hostname: kafka-ui
+    depends_on:
+      - kafka
+      # kafka:
+      #   condition: service_healthy
+      # kafka-connect:
+      #   condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
+
+#  doc-processor:
+#    build:
+#      context: ../doc-processor
+#      dockerfile: Dockerfile
+#    hostname: doc-processor
+#    container_name: doc-processor
+#    depends_on:
+#      - postgres
+#      - kafka
+#    ports:
+#      - "8082:8080"
+#    environment:
+#      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/doc-manager
+#      QUARKUS_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
