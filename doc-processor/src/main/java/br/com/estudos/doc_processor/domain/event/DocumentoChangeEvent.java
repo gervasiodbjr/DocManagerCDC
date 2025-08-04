@@ -2,18 +2,13 @@ package br.com.estudos.doc_processor.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NoArgsConstructor;
+
 import java.time.OffsetDateTime;
 
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DocumentoChangeEvent {
-
-    public Documento before;
-    public Documento after;
-    public Source source;
-    public String op;
-    @JsonProperty("ts_ms")
-    public Long tsMs;
-    public Object transaction; // pode ser um objeto ou null
+public class DocumentoChangeEvent extends ChangeEvent<DocumentoChangeEvent.Documento> {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Documento {
@@ -28,20 +23,4 @@ public class DocumentoChangeEvent {
         public Long departamentoId;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Source {
-        public String version;
-        public String connector;
-        public String name;
-        @JsonProperty("ts_ms")
-        public Long tsMs;
-        public String snapshot;
-        public String db;
-        public String sequence;
-        public String schema;
-        public String table;
-        public Long txId;
-        public Long lsn;
-        public Long xmin;
-    }
 }

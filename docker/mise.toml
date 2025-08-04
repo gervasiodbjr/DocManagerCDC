@@ -27,6 +27,18 @@ run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create
 description = "Cria o tópico <debezium.public.documento> no kafka"
 run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create --topic debezium.public.documento --partitions 3 --replication-factor 1"
 
+[tasks."kafka:criar-topico-doc-tag"]
+description = "Cria o tópico <debezium.public.doc_tag> no kafka"
+run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create --topic debezium.public.doc_tag --partitions 3 --replication-factor 1"
+
+[tasks."kafka:criar-topico-doc-categoria"]
+description = "Cria o tópico <debezium.public.doc_categoria> no kafka"
+run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --create --topic debezium.public.doc_categoria --partitions 3 --replication-factor 1"
+
+[tasks."kafka:listar-topicos"]
+description = "Lista dos tópicos no kafka"
+run = "docker exec -it kafka kafka-topics --bootstrap-server kafka:9092 --list"
+
 [tasks."kafka:topico-documento"]
 description = "Monitora e lista as mensagens eviadas para o tópico <debezium.public.documento> no kafka"
 run = "docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic debezium.public.documento --from-beginning"
