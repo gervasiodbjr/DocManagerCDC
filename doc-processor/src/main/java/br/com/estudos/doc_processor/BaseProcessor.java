@@ -8,15 +8,17 @@ import org.jboss.logging.Logger;
 
 import java.util.function.Function;
 
+
 /**
- * Classe base abstrata para processadores de eventos de mudança (ChangeLog).
- * Fornece funcionalidade comum de parsing de mensagens, injeção de ObjectMapper
- * e tratamento de operações de criação/atualização.
+ * Abstract base class for processing change events related to a specific database table.
+ * This class provides common logic for parsing change event messages, handling creation
+ * or update operations, and validates that the events correspond to the expected table.
  *
- * @param <T> O tipo específico de ChangeLog que este processador manipula.
- * @param <A> O tipo do objeto 'after' contido no ChangeLog.
+ * @param <T> The type of ChangeEvent being processed, extends {@code ChangeEvent<?>}.
+ * @param <A> The type of the "after" object within the ChangeEvent (Input Event Entity).
+ * @param <B> The type of the entity associated with the ChangeEvent, extends (Output Event Entity) {@code PanacheEntityBase}.
  */
-public abstract class BaseProcessor<T extends ChangeEvent<?>, A> {
+public abstract class BaseProcessor<T extends ChangeEvent<?>, A, B> {
 
     @Inject
     protected ObjectMapper objectMapper;
@@ -33,6 +35,18 @@ public abstract class BaseProcessor<T extends ChangeEvent<?>, A> {
         this.LOG = Logger.getLogger(getClass());
     }
 
+    /**
+     * Parses a ChangeEventt message into an instance of the specified type.
+     * Validates that the parsed event corresponds to the expected table name.
+     * If the message is null, or if the event's table does not match
+     * the expected table, the method returns null.
+     *
+     * @param message The JSON-formatted string representing the ChangeEvent message,
+     *                or null if no message is available.
+     * @return The parsed ChangeEvent of type {@code T}, or null if the message is invalid,
+     *         the parsed object cannot be created, or the table name does not match the expected value.
+     * @throws Exception If there is an error during message parsing.
+     */
     protected T parseMessage(String message) throws Exception {
         T changeEvent = message != null ? objectMapper.readValue(message, eventType) : null;
         if (changeEvent == null) {
@@ -45,21 +59,7 @@ public abstract class BaseProcessor<T extends ChangeEvent<?>, A> {
         return changeEvent;
     }
 
-    protected DocumentoView handleCreateOrUpdateOperation(T event) {
-        try {
-            Long docId = docIdExtractor.apply((A) event.after);
-            DocumentoView docView = DocumentoView.findById(docId);
-            if (docView != null) {
-                return docView;
-            } else {
-                LOG.warnf("DocumentoView não encontrado para docId=%d durante o processamento da tabela '%s'.", docId, tableName);
-                return null;
-            }
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao processar evento para a tabela '%s': %s", tableName, e.getMessage());
-            return null;
-        }
-    }
+    protected abstract B processChangeEvent(T event);
 
-    protected abstract DocumentoView processChangeEvent(T event);
+    protected abstract B handleCreateOrUpdateOperation(T event);
 }

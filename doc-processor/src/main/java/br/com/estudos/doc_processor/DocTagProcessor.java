@@ -2,13 +2,14 @@ package br.com.estudos.doc_processor;
 
 import br.com.estudos.doc_processor.domain.DocumentoView;
 import br.com.estudos.doc_processor.domain.event.DocTagChangeEvent;
+import br.com.estudos.doc_processor.domain.event.DocumentoChangeEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 @ApplicationScoped
-public class DocTagProcessor extends BaseProcessor<DocTagChangeEvent, DocTagChangeEvent.DocTag> {
+public class DocTagProcessor extends BaseProcessor<DocTagChangeEvent, DocTagChangeEvent.DocTag, DocumentoView> {
 
     public DocTagProcessor() {
         super("doc_tag", DocTagChangeEvent.class, after -> after.docId);
@@ -36,5 +37,22 @@ public class DocTagProcessor extends BaseProcessor<DocTagChangeEvent, DocTagChan
             LOG.warnf("Operação não suportada para %s: %s", tableName, event.op);
         }
         return null;
+    }
+
+    @Override
+    protected DocumentoView handleCreateOrUpdateOperation(DocTagChangeEvent event) {
+        try {
+            Long docId = docIdExtractor.apply(event.after);
+            DocumentoView docView = DocumentoView.findById(docId);
+            if (docView != null) {
+                return docView;
+            } else {
+                LOG.warnf("DocumentoView não encontrado para docId=%d durante o processamento da tabela '%s'.", docId, tableName);
+                return null;
+            }
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao processar evento para a tabela '%s': %s", tableName, e.getMessage());
+            return null;
+        }
     }
 }

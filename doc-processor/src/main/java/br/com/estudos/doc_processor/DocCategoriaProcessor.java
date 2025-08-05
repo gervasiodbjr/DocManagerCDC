@@ -8,7 +8,7 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 @ApplicationScoped
-public class DocCategoriaProcessor extends BaseProcessor<DocCategoriaChangeEvent, DocCategoriaChangeEvent.DocCategoria> {
+public class DocCategoriaProcessor extends BaseProcessor<DocCategoriaChangeEvent, DocCategoriaChangeEvent.DocCategoria, DocumentoView> {
 
     public DocCategoriaProcessor() {
         super("doc_categoria", DocCategoriaChangeEvent.class, after -> after.docId);
@@ -36,5 +36,22 @@ public class DocCategoriaProcessor extends BaseProcessor<DocCategoriaChangeEvent
             LOG.warnf("Operação não suportada para %s: %s", tableName, event.op);
         }
         return null;
+    }
+
+    @Override
+    protected DocumentoView handleCreateOrUpdateOperation(DocCategoriaChangeEvent event) {
+        try {
+            Long docId = docIdExtractor.apply(event.after);
+            DocumentoView docView = DocumentoView.findById(docId);
+            if (docView != null) {
+                return docView;
+            } else {
+                LOG.warnf("DocumentoView não encontrado para docId=%d durante o processamento da tabela '%s'.", docId, tableName);
+                return null;
+            }
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao processar evento para a tabela '%s': %s", tableName, e.getMessage());
+            return null;
+        }
     }
 }

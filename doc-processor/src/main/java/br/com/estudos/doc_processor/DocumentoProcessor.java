@@ -8,7 +8,7 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 @ApplicationScoped
-public class DocumentoProcessor extends BaseProcessor<DocumentoChangeEvent, DocumentoChangeEvent.Documento> {
+public class DocumentoProcessor extends BaseProcessor<DocumentoChangeEvent, DocumentoChangeEvent.Documento, DocumentoView> {
 
     public DocumentoProcessor() {
         super("documento", DocumentoChangeEvent.class, after -> after.id);
@@ -32,5 +32,22 @@ public class DocumentoProcessor extends BaseProcessor<DocumentoChangeEvent, Docu
             return null;
         }
         return handleCreateOrUpdateOperation(event);
+    }
+
+    @Override
+    protected DocumentoView handleCreateOrUpdateOperation(DocumentoChangeEvent event) {
+        try {
+            Long docId = docIdExtractor.apply(event.after);
+            DocumentoView docView = DocumentoView.findById(docId);
+            if (docView != null) {
+                return docView;
+            } else {
+                LOG.warnf("DocumentoView não encontrado para docId=%d durante o processamento da tabela '%s'.", docId, tableName);
+                return null;
+            }
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao processar evento para a tabela '%s': %s", tableName, e.getMessage());
+            return null;
+        }
     }
 }
