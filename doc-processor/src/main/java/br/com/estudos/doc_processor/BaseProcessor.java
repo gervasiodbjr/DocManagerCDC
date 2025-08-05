@@ -1,6 +1,5 @@
 package br.com.estudos.doc_processor;
 
-import br.com.estudos.doc_processor.domain.DocumentoView;
 import br.com.estudos.doc_processor.domain.event.ChangeEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
