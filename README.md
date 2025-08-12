@@ -1,7 +1,7 @@
 # DocManager CDC
 
-Este projeto implementa um sistema de Change Data Capture (CDC) com Debezium, Apache Kafka e Kafka, com o fim de fornecer um ambiente prático para o es-
-tudo desta tecnologia.
+Este projeto implementa um sistema de Change Data Capture (CDC) com Debezium, Apache Kafka e Kafka, com o fim de fornecer um ambiente prático para o estudo 
+desta tecnologia.
 
 O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo real, processá-las e alimentar o tópico kafka 'docview.public.documento', que
 poderá ser usado por outros sistemas.
