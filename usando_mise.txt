@@ -1,0 +1,41 @@
+﻿
+
+1. Entrar no diretório "docker" que fica dentro do diretório do projeto:
+	cd <PATH>/DocManagerCDC/docker
+	
+2. Iniciar os containers:
+	mise run docker:start:all
+	
+3. Verificar se todos os container já subiram:	
+	mise run docker:ps
+	
+4. Criar o conector "postgres-debezium-connector"
+	mise run kafka-debezium-connector
+	
+5. Verificar se o conector foi criado com sucesso:
+	mise run kafka-debezium-connector:status
+	
+6. Abra uma aba do navegador web para acessar a interface admin do Postgres (adminer):
+	endereço: http://localhost:8081
+	Motor de Base de dados: postgres
+	Servidor: postgres
+	Nome de utilizador: admin
+	Senha: postgresxpto
+	Base de dados: doc-manager
+
+7. Abra em outra aba do navegador web a interface de administração do Kafka (kafka-ui)
+	endereço: http://localhost:8080
+	
+8. Entre na pasta "doc-processor":
+	cd <PATH>/DocManagerCDC/doc-processor
+
+9. Inicie a aplicação quarkus que consome as filas do Kafka:
+	mvn quarkus:dev
+	
+10. Na interface do admin do Postgres selecionar o banco "doc-manager" e executar os comandos SQL:
+	"UPDATE documento set departamento_id = 2 WHERE ID = 1;"
+	
+11. Observar no kafka-ui (http://localhost:8080) que deve ter aparecido mensagens nos dois tópicos abaixo:
+	1. "debezium.public.documento"
+	2. "docview.public.documento"
+	
