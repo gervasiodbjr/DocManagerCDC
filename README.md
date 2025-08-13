@@ -93,5 +93,5 @@ O fluxo de dados do sistema é o seguinte:
 
 ## Opcional
 
-    Se preferir, pode ser usado o comando [mise](https://github.com/jdx/mise) para automatizar alguns comandos e processos. Na pasta
+    Se preferir, pode ser usado o comando **mise** (https://github.com/jdx/mise) para automatizar alguns comandos e processos. Na pasta
     'docker' existe um arquivo 'mise.toml' com algumas tasks já configuradas.
