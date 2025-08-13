@@ -55,17 +55,6 @@ O fluxo de dados do sistema é o seguinte:
    ```
 
    Ou execute o comando `curl` presente no script manualmente. Isso instruirá o Kafka Connect a começar a monitorar a tabela `documento` (e outras, se configurado) no banco de dados `doc-manager`.
-4. **Execute o Serviço `doc-processor`:**
-
-   O serviço `doc-processor` está comentado no arquivo `docker-compose.yml` para facilitar o desenvolvimento local. Para executá-lo:
-
-   - **Via IDE (Recomendado para desenvolvimento):** Abra o projeto `doc-processor` em sua IDE de preferência e execute a aplicação Quarkus.
-   - **Via Maven:**
-     ```bash
-     cd ../doc-processor
-     mvn quarkus:dev
-     ```
-   - **Via Docker (descomente no `docker-compose.yml`):** Se preferir, descomente a seção `doc-processor` no `docker-compose.yml` e reinicie o compose.
 
 ## Serviços e Portas
 
