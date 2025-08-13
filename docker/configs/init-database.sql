@@ -81,3 +81,26 @@ SELECT
   ) AS tags
 FROM documento d
 JOIN departamento dep ON d.departamento_id = dep.id;
+
+-- INSERINDO DADOS INICIAIS DE TESTE
+
+INSERT INTO "tag" ("id", "nome") VALUES
+(1,	'Tag 01'),
+(2,	'Tag 02');
+
+INSERT INTO "categoria" ("id", "nome") VALUES
+(1,	'Categoria 01'),
+(2,	'Categoria 02');
+
+INSERT INTO "departamento" ("id", "nome") VALUES
+(1,	'Departamento 01'),
+(2,	'Departamento 02');
+
+INSERT INTO "documento" ("titulo", "corpo", "departamento_id") VALUES
+('Documento 01', 'Conteúdo do documento de teste 01', 1);
+
+INSERT INTO "doc_categoria" ("doc_id", "categoria_id") VALUES
+(1,	1);
+
+INSERT INTO "doc_tag" ("doc_id", "tag_id") VALUES
+(1,	1);
