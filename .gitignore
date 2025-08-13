@@ -1,0 +1,48 @@
+# Build artifacts
+/target/
+/build/
+*/target/
+*/build/
+*.class
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+# Gradle
+.gradle/
+*.iml
+.idea/
+.project
+.classpath
+.settings/
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+*.launch
+.metadata
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Log files
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Quarkus specific
+quarkus-app/
+# Ensure that the native binary is always ignored,
+# regardless of the value of the 'quarkus.package.output-directory' property
+*-runner
+

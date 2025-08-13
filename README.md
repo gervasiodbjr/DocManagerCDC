@@ -1,10 +1,8 @@
 # DocManager CDC
 
-Este projeto implementa um sistema de Change Data Capture (CDC) com Debezium, Apache Kafka e Kafka, com o fim de fornecer um ambiente prático para o estudo 
-desta tecnologia.
+Este projeto implementa um sistema de Change Data Capture (CDC) com Debezium, Apache Kafka e Kafka Connect, com o fim de fornecer um ambiente prático para o estudo desta tecnologia.
 
-O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo real, processá-las e alimentar o tópico kafka 'docview.public.documento', que
-poderá ser usado por outros sistemas.
+O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo real, processá-las e alimentar o tópico kafka 'docview.public.documento', que poderá ser usado por outros sistemas.
 
 ## Arquitetura
 
@@ -35,7 +33,7 @@ O fluxo de dados do sistema é o seguinte:
 1. **Clone o repositório:**
 
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/gervasiodbjr/DocManagerCDC
    cd DocManagerCDC
    ```
 2. **Inicie a infraestrutura com Docker Compose:**
