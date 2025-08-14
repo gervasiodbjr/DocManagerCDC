@@ -11,7 +11,7 @@ description = "Connect to PostgreSQL database (outbox_demo) using interactive ps
 run = "docker exec -it $(docker compose -f docker-compose.yml ps -q postgres) psql -U admin -d doc-manager"
 
 [tasks."kafka-debezium-connector"]
-description = "Cria o conector <postgres-debezium-connector> no kafka"
+description = "Cria o conector <postgres-debezium-connector> no kafka-connect"
 run = '''
 curl -X POST \
   -H "Content-Type: application/json" \
