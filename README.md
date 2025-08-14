@@ -36,25 +36,14 @@ O fluxo de dados do sistema é o seguinte:
    git clone https://github.com/gervasiodbjr/DocManagerCDC
    cd DocManagerCDC
    ```
-2. **Inicie a infraestrutura com Docker Compose:**
+2. **Iniciando o projeto:**
 
-   Navegue até o diretório `docker` e execute o comando:
-
-   ```bash
-   cd docker
-   docker-compose up -d
-   ```
-
-   Este comando irá iniciar todos os serviços necessários: PostgreSQL, Zookeeper, Kafka e Kafka Connect.
-3. **Configure o Conector Debezium:**
-
-   Após os contêineres estarem em execução, execute o script para configurar o conector do Debezium para o PostgreSQL.
+   - Enrte no diretório do projeto
+   - Execute o comando:
 
    ```bash
-   ./configs/create-connector.sh
+   ./start-project.sh
    ```
-
-   Ou execute o comando `curl` presente no script manualmente. Isso instruirá o Kafka Connect a começar a monitorar a tabela `documento` (e outras, se configurado) no banco de dados `doc-manager`.
 
 ## Serviços e Portas
 
