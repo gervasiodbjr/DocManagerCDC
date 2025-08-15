@@ -6,6 +6,8 @@ O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo rea
 
 ## Arquitetura
 
+![Esquema](assets/Esquema.png)
+
 O fluxo de dados do sistema é o seguinte:
 
 1. **PostgreSQL**: O banco de dados primário onde os dados dos documentos são armazenados.
