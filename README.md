@@ -8,7 +8,7 @@ O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo rea
 
 ![Esquema](assets/Esquema.png)
 
-O fluxo de dados do sistema é o seguinte:
+**O fluxo de dados do sistema é o seguinte:**
 
 1. **PostgreSQL**: O banco de dados primário onde os dados dos documentos são armazenados.
 2. **Debezium (Kafka Connect)**: Monitora o log de transações (WAL) do PostgreSQL. Qualquer inserção, atualização ou exclusão nas tabelas configuradas é capturada como um evento.
