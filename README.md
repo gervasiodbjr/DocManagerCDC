@@ -40,7 +40,7 @@ O objetivo é capturar alterações em um banco de dados PostgreSQL em tempo rea
    ```
 2. **Iniciando o projeto:**
 
-   - Enrte no diretório do projeto
+   - Entre no diretório do projeto
    - Execute o comando:
 
    ```bash
